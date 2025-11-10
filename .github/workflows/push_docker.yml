@@ -26,7 +26,8 @@ jobs:
         - name: Build and push Docker production image
           uses: docker/build-push-action@v4
           with:
-            context: ./docker/Dockerfile_prod
+            context: .
+            file: ./docker/Dockerfile_prod
             push: true
             tags: |
               ${{ secrets.DOCKER_USERNAME }}/microblog:${{ github.ref_name }}-prod
@@ -34,8 +35,9 @@ jobs:
         - name: Build and push Docker test image
           uses: docker/build-push-action@v4
           with:
-            context: ./docker/Dockerfile_test
+            context: .
+            file: ./docker/Dockerfile_test
             push: true
             tags: |
-              ${{ secrets.DOCKER_USERNAME }}/microblog:${{ github.ref_name }}-prod
+              ${{ secrets.DOCKER_USERNAME }}/microblog:${{ github.ref_name }}-test
         
