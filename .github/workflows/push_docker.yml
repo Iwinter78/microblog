@@ -14,7 +14,7 @@ on:
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
         steps:
         - name: Checkout code
           uses: actions/checkout@v3
@@ -39,5 +39,9 @@ jobs:
             file: ./docker/Dockerfile_test
             push: true
             tags: |
+<<<<<<< Updated upstream
               ${{ secrets.DOCKER_USERNAME }}/microblog:${{ github.ref_name }}-test
         
+=======
+              ${{ secrets.DOCKER_USERNAME }}/microblog:${{ github.ref_name }}-test
+>>>>>>> Stashed changes
