@@ -39,9 +39,4 @@ jobs:
             file: ./docker/Dockerfile_test
             push: true
             tags: |
-<<<<<<< Updated upstream
               ${{ secrets.DOCKER_USERNAME }}/microblog:${{ github.ref_name }}-test
-        
-=======
-              ${{ secrets.DOCKER_USERNAME }}/microblog:${{ github.ref_name }}-test
->>>>>>> Stashed changes
