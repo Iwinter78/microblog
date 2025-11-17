@@ -56,6 +56,15 @@ def user(username):
     posts = user_.posts.all()
     return render_template('user.html', user=user_, posts=posts)
 
+@bp.route('/explore')
+@login_required
+def explore():
+    """
+    Route for explore
+    """
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('index.html', title='Explore', posts=posts)
+
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
