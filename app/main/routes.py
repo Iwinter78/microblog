@@ -1,5 +1,6 @@
 """
 Contains routes for main purpose of app
+app/main/routes.py
 """
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request, current_app
@@ -54,19 +55,6 @@ def user(username):
     user_ = User.query.filter_by(username=username).first_or_404()
     posts = user_.posts.all()
     return render_template('user.html', user=user_, posts=posts)
-
-
-
-@bp.route('/user/<username>')
-@login_required
-def user(username):
-    """
-    Route for user
-    """
-    user_ = User.query.filter_by(username=username).first_or_404()
-    posts = current_user.posts.all()
-    return render_template('user.html', user=user_, posts=posts)
-
 
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
