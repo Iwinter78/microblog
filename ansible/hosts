@@ -1,2 +1,15 @@
 [local]
 localhost ansible_connection=local
+
+[devops]
+13.74.85.65 ansible_user=azureuser
+13.74.85.139 ansible_user=azureuser
+52.169.81.107 ansible_user=azureuser
+13.74.85.91 ansible_user=azureuser
+
+[webservers]
+13.74.85.65 ansible_user=azureuser
+13.74.85.139 ansible_user=azureuser
+
+[databases]
+52.169.81.107 ansible_user=azureuser
