@@ -3,7 +3,7 @@
 -   name: Remove a VM and all resources that were autocreated
     azure_rm_virtualmachine:
         resource_group: "{{ resource_group }}"
-        name: "{{ iname }}-VM"
+        name: "{{ inventory_hostname }}-VM"
         state: absent
         remove_on_absent:
             - virtual_storage
@@ -11,11 +11,11 @@
 -   name: Delete network interface
     azure_rm_networkinterface:
         resource_group: "{{ resource_group }}"
-        name: "{{ iname }}-NIC"
+        name: "{{ inventory_hostname }}-NIC"
         state: absent
 
 -   name: Delete public ip
     azure_rm_publicipaddress:
         resource_group: "{{ resource_group }}"
-        name: "{{ iname }}-ip"
+        name: "{{ inventory_hostname }}-ip"
         state: absent
