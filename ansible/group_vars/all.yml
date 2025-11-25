@@ -3,19 +3,23 @@
 ansible_python_interpreter: "python3"
 
 region: northeurope
-resource_group: <your resource group> # Change me
-domain_name: <your domain> # Change me
+resource_group: DIDA-SEOL23-DV1673-H25-LP2 # Change me
+domain_name: snabbnudlar.dev # Change me
 
-admin_email: <an email>
+admin_email: seol23@student.bth.se
 
 vmtags:
-    StudentId: <acronym> # Change me
+    StudentId: seol23 # Change me
 
 
-pub_ssh_key_location: '<path to you local ssh public key>' # Change me, your local ssh key!
+pub_ssh_key_locations:
+    - "{{ playbook_dir }}/roles/keys/azure.pub"
+    - "{{ playbook_dir }}/roles/keys/id_rsa.pub"
+
+pub_ssh_key_location: "{{ lookup('env', 'HOME') }}/.ssh/azure.pub"
 
 
 server_user: "deploy"
-server_user_pass: "<a password>" # change me
+server_user_pass: "123123" # change me
 server_user_groups:
     -   sudo

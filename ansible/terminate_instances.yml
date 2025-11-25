@@ -11,7 +11,7 @@
 
 
 -   name: remove instance
-    hosts: devops
+    hosts: provision_targets
     connection: local
     gather_facts: False
     collections:
@@ -38,3 +38,39 @@
         state: absent
     roles: 
         - security_groups
+
+-   name: Clear hosts file
+    hosts: localhost
+    connection: local
+    gather_facts: False
+    tasks:
+        -   name: Reset hosts file to default
+            copy:
+                content: |
+                    [local]
+                    localhost ansible_connection=local
+
+                    [provision_targets]
+                    appserver1
+                    appserver2
+                    database
+                    loadbalancer
+                    
+                    [app_servers]
+                    
+                    [db_servers]
+                    
+                    [load_balancers]
+                    
+                    [devops:children]
+                    app_servers
+                    db_servers
+                    load_balancers
+                    
+                    [webservers:children]
+                    app_servers
+                    
+                    [databases:children]
+                    db_servers
+                dest: "{{ playbook_dir }}/hosts"
+                backup: yes

@@ -16,3 +16,7 @@
 ## 11.1.4
 
 * Added follow feature so you now can follow other people
+
+## 11.2.4
+
+* It's now possible to deploy instances on Azure using Ansible 

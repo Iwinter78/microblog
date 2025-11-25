@@ -1,2 +1,29 @@
 [local]
 localhost ansible_connection=local
+
+[provision_targets]
+appserver1
+appserver2
+database
+loadbalancer
+
+[app_servers]
+appserver1.snabbnudlar.dev ansible_host=52.169.111.247 ansible_user=azureuser
+appserver2.snabbnudlar.dev ansible_host=52.169.111.223 ansible_user=azureuser
+
+[db_servers]
+db.snabbnudlar.dev ansible_host=52.169.106.253 ansible_user=azureuser
+
+[load_balancers]
+lb.snabbnudlar.dev ansible_host=52.169.107.116 ansible_user=azureuser
+
+[devops:children]
+app_servers
+db_servers
+load_balancers
+
+[webservers:children]
+app_servers
+
+[databases:children]
+db_servers
