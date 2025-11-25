@@ -12,7 +12,11 @@ vmtags:
     StudentId: seol23 # Change me
 
 
-pub_ssh_key_location: '/home/sebbe/.ssh/azure.pub' # Change me, your local ssh key!
+pub_ssh_key_locations:
+    - "{{ playbook_dir }}/roles/keys/azure.pub"
+    - "{{ playbook_dir }}/roles/keys/id_rsa.pub"
+
+pub_ssh_key_location: "{{ lookup('env', 'HOME') }}/.ssh/azure.pub"
 
 
 server_user: "deploy"
