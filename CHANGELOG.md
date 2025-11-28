@@ -20,3 +20,8 @@
 ## 11.2.4
 
 * It's now possible to deploy instances on Azure using Ansible 
+
+## 11.3.4
+
+* Changed out on what port the production Docker container is running at
+    * Now runs on port 8000 outside
