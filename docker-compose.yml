@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile_prod
     ports:
-      - "5000:5000"
+      - "8000:5000"
 
   prod-database:
     image: mysql:latest
@@ -30,7 +30,7 @@ services:
       - ./app:/home/microblog/app
       - ./migrations:/home/microblog/migrations
     ports:
-      - "5000:5000"
+      - "8000:5000"
 
   test-database:
     image: mysql:latest
