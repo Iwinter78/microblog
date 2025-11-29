@@ -31,3 +31,5 @@
 * Now possible to redeploy using the Roling start deployment stratergy to minimize downtime 
 
 ## 11.5.4
+
+* Created new workflow for CD now it runs the latest image that is published
