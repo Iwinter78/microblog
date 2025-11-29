@@ -84,4 +84,3 @@
         state: absent
         force: yes
         remove: yes
-    # ignore_errors: yes
