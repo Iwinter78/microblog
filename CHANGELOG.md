@@ -29,3 +29,5 @@
 ## 11.4.4
 
 * Now possible to redeploy using the Roling start deployment stratergy to minimize downtime 
+
+## 11.5.4
