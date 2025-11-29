@@ -8,14 +8,14 @@ database
 loadbalancer
 
 [app_servers]
-appserver1.snabbnudlar.dev ansible_host=52.169.111.247 ansible_user=azureuser
-appserver2.snabbnudlar.dev ansible_host=52.169.111.223 ansible_user=azureuser
+appserver1.snabbnudlar.dev ansible_host=52.169.111.116 ansible_user=deploy
+appserver2.snabbnudlar.dev ansible_host=52.169.104.234 ansible_user=deploy
 
 [db_servers]
-db.snabbnudlar.dev ansible_host=52.169.106.253 ansible_user=azureuser
+db.snabbnudlar.dev ansible_host=52.169.111.215 ansible_user=deploy
 
 [load_balancers]
-lb.snabbnudlar.dev ansible_host=52.169.107.116 ansible_user=deploy
+lb.snabbnudlar.dev ansible_host=52.169.108.69 ansible_user=deploy
 
 [devops:children]
 app_servers

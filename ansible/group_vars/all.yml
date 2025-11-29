@@ -14,7 +14,7 @@ vmtags:
 
 pub_ssh_key_locations:
     - "{{ playbook_dir }}/roles/keys/azure.pub"
-    - "{{ playbook_dir }}/roles/keys/id_rsa.pub"
+    - "{{ playbook_dir }}/roles/keys/kaos.pub"
 
 pub_ssh_key_location: "{{ lookup('env', 'HOME') }}/.ssh/azure.pub"
 
