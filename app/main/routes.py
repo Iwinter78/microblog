@@ -123,4 +123,6 @@ def unfollow(username):
 @bp.route('/version', methods=['GET'])
 def version():
     version = os.environ.get('APP_VERSION', 'unknown')
-    return jsonify({'version': version})
+    return {
+        "version": version
+    }
