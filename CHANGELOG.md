@@ -25,3 +25,7 @@
 
 * Changed out on what port the production Docker container is running at
     * Now runs on port 8000 outside
+
+## 11.4.4
+
+* Now possible to redeploy using the Roling start deployment stratergy to minimize downtime 
