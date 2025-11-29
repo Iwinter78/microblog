@@ -91,13 +91,38 @@
 - name: copy docker-compose file
   become: true
   copy:
-    src: ../../../../docker-compose.yml
+    src: ../../../../docker-compose.prod.yml
     dest: /home/deploy/microblog/docker-compose.yml
     owner: deploy
     group: deploy
     mode: '0644'
-    
-- name: start microblog database container
-  command: docker compose up prod -d
+
+- name: pull down latest docker images
+  command: docker pull iwinter78/microblog:{{ version | default('1.0.0-prod') }}
   args:
     chdir: /home/deploy/microblog
+
+- name: initialize docker swarm
+  command: docker swarm init
+  args:
+    chdir: /home/deploy/microblog
+  ignore_errors: true
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+
+- name: get swarm join token
+  command: docker swarm join-token -q worker
+  register: swarm_join_token
+  args:
+    chdir: /home/deploy/microblog
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+
+- name: deploy/update stack
+  command: docker stack deploy -c docker-compose.yml microblog
+  args:
+    chdir: /home/deploy/microblog
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+
+- name: make appserver2 join the swarm
+  command: docker swarm join --token {{ hostvars['appserver1.snabbnudlar.dev'].swarm_join_token.stdout }} {{ hostvars['appserver1.snabbnudlar.dev'].ansible_host }}:2377
+  when: inventory_hostname == 'appserver2.snabbnudlar.dev'
+  ignore_errors: true
