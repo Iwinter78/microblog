@@ -1,11 +1,12 @@
 services:
   prod:
-    image: iwinter78/microblog:${VERSION:-1.0.0-prod}
+    image: iwinter78/microblog:${VERSION-prod:-1.0.0-prod}
     build:
       context: .
       dockerfile: docker/Dockerfile_prod
     environment:
       - DATABASE_URL=mysql+pymysql://microblog:microblog@52.169.111.215:3306/microblog
+      - APP_VERSION=${VERSION:-1.0.0-prod}
     ports:
       - "8000:5000"
     deploy:

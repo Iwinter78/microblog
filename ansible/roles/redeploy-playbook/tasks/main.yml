@@ -1,9 +1,24 @@
 - name: get new images in docker swarm
-  shell: docker compose pull
+  shell: VERSION={{ version }} docker compose pull
   args:
     chdir: /home/deploy/microblog
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+
+- name: set new version fact
+  shell: docker compose images prod | awk 'NR==2 {print $2}'
+  args:
+    chdir: /home/deploy/microblog
+  register: new_version
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
 
 - name: redeploy docker stack
-  shell: docker stack deploy -c docker-compose.yml microblog
+  shell: VERSION={{ version }} docker stack deploy -c docker-compose.yml microblog
   args:
     chdir: /home/deploy/microblog
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+
+- name: restart docker services
+  shell: docker service update --force microblog_prod
+  args:
+    chdir: /home/deploy/microblog
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'

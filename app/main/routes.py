@@ -9,6 +9,7 @@ from app import db
 from app.main.forms import EditProfileForm, PostForm
 from app.models import User, Post
 from app.main import bp
+import os
 
 
 
@@ -118,3 +119,8 @@ def unfollow(username):
     db.session.commit()
     flash(f'You are not following {username}.')
     return redirect(url_for('main.user', username=username))
+
+@bp.route('/version', methods=['GET'])
+def version():
+    version = os.environ.get('APP_VERSION', 'unknown')
+    return jsonify({'version': version})
