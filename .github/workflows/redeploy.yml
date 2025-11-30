@@ -59,6 +59,6 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: "False"
 
       - name: check version deployed
-        run: cd ansible/ && ansible-playbook -i hosts check_version.yml --private-key=/home/runner/.ssh/id_rsa -
+        run: cd ansible/ && ansible-playbook -i hosts check_version.yml --private-key=/home/runner/.ssh/id_rsa
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
