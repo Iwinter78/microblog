@@ -57,6 +57,8 @@ jobs:
         run: cd ansible/ && ansible-playbook -i hosts redeploy.yml --private-key=/home/runner/.ssh/id_rsa -e "version=${{ steps.version.outputs.version }}"
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
-      
-      - name: Check for version deployed
-        run: curl -sL --dns-servers 8.8.8.8 http://snabbnudlar.dev/version
+
+      - name: check version deployed
+        run: cd ansible/ && ansible-playbook -i hosts check_version.yml --private-key=/home/runner/.ssh/id_rsa -
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"

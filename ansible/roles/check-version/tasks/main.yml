@@ -1,0 +1,9 @@
+- name: check version using curl
+  shell: curl -s http://localhost:8000/version
+  register: version_output
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+
+- name: display version
+  debug:
+    msg: "Version: {{ version_output.stdout }}"
+  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
