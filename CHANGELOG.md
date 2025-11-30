@@ -33,3 +33,7 @@
 ## 11.5.4
 
 * Created new workflow for CD now it runs the latest image that is published
+
+## 11.6.4
+
+* Created version endpoint (i think)
