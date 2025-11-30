@@ -59,4 +59,4 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: "False"
       
       - name: Check for version deployed
-        run: curl -sL snabbnudlar.dev/version
+        run: curl -sL --dns-servers 8.8.8.8 http://snabbnudlar.dev/version
