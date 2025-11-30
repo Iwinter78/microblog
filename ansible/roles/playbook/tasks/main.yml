@@ -96,6 +96,14 @@
     owner: deploy
     group: deploy
     mode: '0644'
+- name: copy init database folder
+  become: true
+  copy:
+    src: ../../../../db/
+    dest: /home/deploy/microblog/
+    owner: deploy
+    group: deploy
+    mode: '0755'
     
 - name: start microblog database container
   command: docker compose up prod-database -d
