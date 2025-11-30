@@ -59,6 +59,4 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: "False"
       
       - name: Check for version deployed
-        run: curl https://snabbnudlar.dev/version
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
+        run: curl -sL snabbnudlar.dev/version
