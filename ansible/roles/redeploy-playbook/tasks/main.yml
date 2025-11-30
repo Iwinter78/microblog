@@ -12,7 +12,7 @@
   when: inventory_hostname == 'appserver1.snabbnudlar.dev'
 
 - name: force update docker services with new image
-  shell: docker service update --force --image your-registry/microblog:{{ version }}-prod microblog_prod
+  shell: docker service update --force --image iwinter78/microblog:{{ version }}-prod microblog_prod
   args:
     chdir: /home/deploy/microblog
   when: inventory_hostname == 'appserver1.snabbnudlar.dev'
