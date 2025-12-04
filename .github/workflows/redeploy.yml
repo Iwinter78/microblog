@@ -1,6 +1,10 @@
 name: Deploy microblog
 
 on:
+  workflow_run:
+    workflows: ["security-check"]
+    types:
+      - completed
   workflow_call:
   push:
     branches: [ "master" ]
