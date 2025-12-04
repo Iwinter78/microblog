@@ -221,3 +221,24 @@ install-deploy:
 .PHONY: run-bandit
 run-bandit:
 	bandit -r app
+
+.PHONY: trivy-image
+trivy-image:
+	$(eval VERSION := $(shell git describe --tags --abbrev=0))
+	docker build -t microblog:$(VERSION) -f docker/Dockerfile_prod .
+	docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --scanners vuln,secret,misconfig --no-progress --severity HIGH,CRITICAL --exit-code 1 microblog:$(VERSION)
+
+.PHONY: trivy-fs
+trivy-fs:
+	@docker run --rm -v .:/repo -w /repo aquasec/trivy:latest fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --exit-code 1 --no-progress --skip-dirs .venv,venv .
+
+.PHONY: trivy-all
+trivy-all: trivy-image trivy-fs
+
+.PHONY: dockle
+dockle:
+	$(eval VERSION := $(shell git describe --tags --abbrev=0))
+	$(eval DOCKLE_VERSION := $(shell curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/'))
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock goodwithtech/dockle:v$(DOCKLE_VERSION) iwinter78/microblog:$(VERSION)-prod
+
+
