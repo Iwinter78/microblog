@@ -1,6 +1,9 @@
 - name: check version using curl
   shell: curl -s http://localhost:8000/version
   register: version_output
+  until: version_output.rc == 0
+  retries: 30
+  delay: 5
   when: inventory_hostname == 'appserver1.snabbnudlar.dev'
 
 - name: display version
