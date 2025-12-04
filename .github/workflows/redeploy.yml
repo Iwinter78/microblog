@@ -5,6 +5,7 @@ on:
     workflows: ["security-check"]
     types:
       - completed
+    branches: [ "master" ]
   workflow_call:
   push:
     branches: [ "master" ]
@@ -13,9 +14,8 @@ on:
 
 jobs:
   build:
-
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
