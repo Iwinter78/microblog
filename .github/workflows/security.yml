@@ -1,0 +1,63 @@
+name: security-check
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/test.txt
+      
+      - name: Run Bandit security scan
+        run: |
+          bandit -r app
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Get latest tag
+        id: get-tag
+        run: |
+          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.1")
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Build Docker image for testing
+        run: |
+          docker build -t microblog:${{ steps.get-tag.outputs.VERSION }} -f docker/Dockerfile_prod .
+      
+      - name: Run Trivy vulnerability scanner on image
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --scanners vuln,secret,misconfig --no-progress --severity HIGH,CRITICAL --exit-code 1 microblog:${{ steps.get-tag.outputs.VERSION }}
+      
+      - name: Run Trivy filesystem scanner
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/repo -w /repo aquasec/trivy:latest fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --exit-code 1 --no-progress --skip-dirs .venv,venv .
+      
+      - name: Get Dockle version
+        id: dockle-version
+        run: |
+          DOCKLE_VERSION=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+          echo "DOCKLE_VERSION=$DOCKLE_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Run Dockle security scanner
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock goodwithtech/dockle:v${{ steps.dockle-version.outputs.DOCKLE_VERSION }} microblog:${{ steps.get-tag.outputs.VERSION }}
