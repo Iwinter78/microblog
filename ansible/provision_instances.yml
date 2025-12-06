@@ -24,6 +24,7 @@
     connection: local # Keep ansible from open ssh connection
     gather_facts: False
     # no_log: True
+    serial: 1
     collections:
         - azure.azcollection
     roles:
