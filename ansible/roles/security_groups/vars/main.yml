@@ -61,4 +61,4 @@ sg_groups:
             access: Allow
             priority: 1003
             direction: Inbound
-            source_address_prefix: "{{ hostvars['localhost']['group']['appserver2'][0] }}/32"
+            source_address_prefix: "{{ hostvars['localhost']['groups']['appserver2'][0] }}/32"
