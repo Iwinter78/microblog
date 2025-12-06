@@ -38,7 +38,7 @@ sg_groups:
             access: Allow
             priority: 1002
             direction: Inbound
-            source_address_prefix: "{{ hostvars[groups['load_balancers'] | first]['ansible_host'] }}/32"
+            source_address_prefix: "{{ hostvars[groups['load_balancers'][0]]['tags']['PublicIP'] }}/32"
     -   name: database
         port_rules:
         -   name: SSH
@@ -54,11 +54,11 @@ sg_groups:
             access: Allow
             priority: 1002
             direction: Inbound
-            source_address_prefix: "{{ hostvars[groups['app_servers'][0]]['ansible_host'] }}/32"
+            source_address_prefix: "{{ hostvars[groups['app_servers'][0]]['tags']['PublicIP'] }}/32"
         -   name: MYSQL_APP2
             protocol: Tcp
             destination_port_range: 3306
             access: Allow
             priority: 1003
             direction: Inbound
-            source_address_prefix: "{{ hostvars[groups['app_servers'][1]]['ansible_host'] }}/32"
+            source_address_prefix: "{{ hostvars[groups['app_servers'][1]]['tags']['PublicIP'] }}/32"
