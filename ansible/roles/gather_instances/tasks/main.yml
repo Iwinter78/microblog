@@ -33,6 +33,13 @@
             - "StudentId:{{ vmtags.StudentId }}"
     register: az_facts
 
+- name: Store app server IPs as fact
+  set_fact:
+    app_server_ips: "{{ az_facts.vms | selectattr('tags.Type', 'equalto', 'appserver') | map(attribute='tags.PublicIP') | list }}"
+    lb_ip: "{{ (az_facts.vms | selectattr('tags.Type', 'equalto', 'loadbalancer') | map(attribute='tags.PublicIP') | list) | first }}"
+  delegate_to: localhost
+  delegate_facts: true
+
 -   name: Display all variables/facts known for a host
     debug:
         var: hostvars
