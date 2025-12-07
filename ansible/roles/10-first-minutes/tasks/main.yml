@@ -52,30 +52,37 @@
         state: present
         validate: '/usr/sbin/visudo -cf %s' # kan få fel med line "{{ server_user }} testing"
 
--   name: Disallow root and password ssh access
-    lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-        state: present
-        validate: '/usr/sbin/sshd -T -f %s' # kan få fel med line "PermitRootLogin testing"
-    with_items:
-        - regexp: "^PasswordAuthentication"
-          line: "PasswordAuthentication no"
-        - regexp: "^PermitRootLogin"
-          line: "PermitRootLogin no"
-    notify: restart ssh
-
--   name: flush handlers to restart SSH
-    meta: flush_handlers # we cant do it later because after this we cant ssh as root
-
--   name: Only allow user to ssh
-    lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: "^AllowUsers"
-        line: "AllowUsers {{ server_user }}"
-        state: present
-    # ignore_errors: yes
+- name: Configure SSH security settings
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    validate: '/usr/sbin/sshd -T -f %s'
+  with_items:
+    - regexp: "^#?HostKey /etc/ssh/ssh_host_ed25519_key"
+      line: "HostKey /etc/ssh/ssh_host_ed25519_key"
+    - regexp: "^#?HostKey /etc/ssh/ssh_host_rsa_key"
+      line: "HostKey /etc/ssh/ssh_host_rsa_key"
+    - regexp: "^#?HostKey /etc/ssh/ssh_host_ecdsa_key"
+      line: "HostKey /etc/ssh/ssh_host_ecdsa_key"
+    - regexp: "^#?KexAlgorithms"
+      line: "KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
+    - regexp: "^#?Ciphers"
+      line: "Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
+    - regexp: "^#?MACs"
+      line: "MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com"
+    - regexp: "^#?AuthenticationMethods"
+      line: "AuthenticationMethods publickey"
+    - regexp: "^#?LogLevel"
+      line: "LogLevel VERBOSE"
+    - regexp: "^#?PasswordAuthentication"
+      line: "PasswordAuthentication no"
+    - regexp: "^#?PermitRootLogin"
+      line: "PermitRootLogin no"
+    - regexp: "^#?AllowUsers"
+      line: "AllowUsers {{ server_user }}"
+  notify: restart ssh
 
 -   name: Remove default user
     remote_user: "{{ server_user }}"

@@ -33,52 +33,12 @@
             - "StudentId:{{ vmtags.StudentId }}"
     register: az_facts
 
--   name: Build hosts file content
-    set_fact:
-        hosts_content: |
-            [local]
-            localhost ansible_connection=local
-
-            [provision_targets]
-            appserver1
-            appserver2
-            database
-            loadbalancer
-
-            [app_servers]
-            {% for vm in az_facts.vms | selectattr('tags.Type', 'equalto', 'appserver') %}
-            appserver{{ loop.index }}.{{ domain_name }} ansible_host={{ vm.tags.PublicIP }} ansible_user=azureuser
-            {% endfor %}
-
-            [db_servers]
-            {% for vm in az_facts.vms | selectattr('tags.Type', 'equalto', 'database') %}
-            db.{{ domain_name }} ansible_host={{ vm.tags.PublicIP }} ansible_user=azureuser
-            {% endfor %}
-
-            [load_balancers]
-            {% for vm in az_facts.vms | selectattr('tags.Type', 'equalto', 'loadbalancer') %}
-            lb.{{ domain_name }} ansible_host={{ vm.tags.PublicIP }} ansible_user=azureuser
-            {% endfor %}
-
-            [devops:children]
-            app_servers
-            db_servers
-            load_balancers
-
-            [webservers:children]
-            app_servers
-
-            [databases:children]
-            db_servers
-
--   name: Write hosts file
-    copy:
-        content: "{{ hosts_content }}"
-        dest: "{{ playbook_dir }}/hosts"
-        backup: yes
-    delegate_to: localhost
-
-
+- name: Store app server IPs as fact
+  set_fact:
+    app_server_ips: "{{ az_facts.vms | selectattr('tags.Type', 'equalto', 'appserver') | map(attribute='tags.PublicIP') | list }}"
+    lb_ip: "{{ (az_facts.vms | selectattr('tags.Type', 'equalto', 'loadbalancer') | map(attribute='tags.PublicIP') | list) | first }}"
+  delegate_to: localhost
+  delegate_facts: true
 
 -   name: Display all variables/facts known for a host
     debug:

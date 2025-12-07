@@ -10,16 +10,6 @@
         - include_vars: roles/provision_instances/vars/main.yml
         - include_tasks: roles/provision_instances/tasks/add_vms_as_hosts.yml
 
-
-
--   name: create security groups
-    hosts: local
-    gather_facts: False
-    roles: 
-        - security_groups
-
-
-
 -   name: create networks
     hosts: local
     gather_facts: False
@@ -34,6 +24,7 @@
     connection: local # Keep ansible from open ssh connection
     gather_facts: False
     # no_log: True
+    serial: 1
     collections:
         - azure.azcollection
     roles:
