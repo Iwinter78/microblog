@@ -11,6 +11,8 @@ on:
 jobs:
     unit-tests:
         runs-on: ubuntu-latest
+        env:
+          PROMETHEUS_MULTIPROC_DIR: /tmp
 
         steps:
         - name: Checkout code
