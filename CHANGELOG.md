@@ -38,7 +38,7 @@
 
 * Created version endpoint (i think)
 
-## 11.7.4
+## 11.7.5
 
 * Added Bandit as an dependency
 * Added command to run Bandit in Makefile
