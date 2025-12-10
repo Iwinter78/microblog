@@ -1,85 +1,6 @@
 ---
-- name: update apt cache
-  become: true
-  apt:
-    update_cache: true
 
-- name: install ca-certificates and curl
-  become: true
-  apt:
-    name:
-      - ca-certificates
-      - curl
-    state: present
-
-- name: create Docker GPG keyring directory
-  become: true
-  file:
-    path: /etc/apt/keyrings
-    state: directory
-    mode: '0755'
-
-- name: add Docker GPG key
-  become: true
-  shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-
-- name: set Docker GPG key permissions
-  become: true
-  file:
-    path: /etc/apt/keyrings/docker.asc
-    mode: 'a+r'
-
-- name: add Docker repository
-  become: true
-  shell: |
-    tee /etc/apt/sources.list.d/docker.sources <<EOF
-    Types: deb
-    URIs: https://download.docker.com/linux/ubuntu
-    Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
-    Components: stable
-    Signed-By: /etc/apt/keyrings/docker.asc
-    EOF
-
-- name: update apt cache again
-  become: true
-  apt:
-    update_cache: true
-
-- name: install docker
-  become: true
-  apt:
-    name: docker-ce
-    state: present
-
-- name: install docker-compose plugin
-  become: true
-  apt:
-    name: docker-compose-plugin
-    state: present
-
-- name: start and enable docker service
-  become: true
-  systemd:
-    name: docker
-    state: started
-    enabled: true
-
-- name: add deploy user to docker group
-  become: true
-  user:
-    name: deploy
-    groups: docker
-    append: true
-
-- name: usermod docker group
-  become: true
-  command: usermod -aG docker $USER
-
-- name: newgrp docker
-  become: true
-  command: newgrp docker
-
-- name: create microblog directory
+- name: create working directory
   become: true
   file:
     path: /home/deploy/microblog
@@ -88,16 +9,102 @@
     group: deploy
     mode: '0755'
 
-- name: copy docker-compose file
+- name: ensure monitoring packages are installed
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - prometheus
+    - grafana
+    - prometheus-node-exporter
+
+- name: start all monitoring services
+  become: true
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - prometheus
+    - grafana-server
+    - prometheus-node-exporter
+
+- name: copy prometheus configuration file
   become: true
   copy:
-    src: ../../../../docker-compose.monitor.yml
-    dest: /home/deploy/microblog/docker-compose.yml
+    src: ../../../../prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+  notify: restart prometheus
+
+- name: wait for grafana to be ready
+  uri:
+    url: http://localhost:3000/api/health
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 30
+  delay: 2
+
+- name: add prometheus as datasource in grafana
+  become: true
+  community.grafana.grafana_datasource:
+    name: Prometheus
+    ds_type: prometheus
+    url: http://localhost:9090
+    access: proxy
+    is_default: true
+    grafana_url: http://localhost:3000
+    grafana_user: admin
+    grafana_password: admin
+
+- name: create working directory
+  become: true
+  file:
+    path: /home/deploy/microblog
+    state: directory
     owner: deploy
     group: deploy
-    mode: '0644'
+    mode: '0755'
 
-- name: start monitor containers
-  command: docker compose up -d
-  args:
-    chdir: /home/deploy/microblog
+- name: Ensure monitoring packages are installed
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - prometheus
+    - grafana
+    - prometheus-node-exporter
+
+- name: start all monitoring services
+  become: true
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - prometheus
+    - grafana-server
+    - prometheus-node-exporter
+
+- name: copy prometheus configuration file
+  become: true
+  copy:
+    src: ../../../../prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+  notify: restart prometheus
+
+- name: add prometheus as datasource in grafana
+  become: true
+  community.grafana.grafana_datasource:
+    name: Prometheus
+    ds_type: prometheus
+    url: http://localhost:9090
+    access: proxy
+    is_default: true
+    grafana_url: http://localhost:3000
+    grafana_user: admin
+    grafana_password: admin
