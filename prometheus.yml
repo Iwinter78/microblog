@@ -11,6 +11,6 @@ scrape_configs:
       - targets: ["0.0.0.0:9090"]
   - job_name: "flask"
     static_configs:
-      - targets: ["prod:5000"]
+      - targets: ["https://snabbnudlar.dev"]
         labels:
           instance: flask
