@@ -17,8 +17,32 @@
     update_cache: yes
   loop:
     - prometheus
-    - grafana
     - prometheus-node-exporter
+
+- name: install grafana packages
+  block:
+   - name: import GPG key
+     shell: sudo mkdir -p /etc/apt/keyrings/ && wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
+
+   - name: add grafana repository
+     shell: echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+
+   - name: update apt
+     command: sudo apt-get update
+     become: true
+
+   - name: install grafana
+     apt:
+       name: grafana
+       state: present
+       update_cache: yes
+     become: true
+- name: start grafana service
+  become: true
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: true
 
 - name: start all monitoring services
   become: true
@@ -28,36 +52,7 @@
     enabled: true
   loop:
     - prometheus
-    - grafana-server
     - prometheus-node-exporter
-
-- name: copy prometheus configuration file
-  become: true
-  copy:
-    src: ../../../../prometheus.yml
-    dest: /etc/prometheus/prometheus.yml
-  notify: restart prometheus
-
-- name: wait for grafana to be ready
-  uri:
-    url: http://localhost:3000/api/health
-    status_code: 200
-  register: result
-  until: result.status == 200
-  retries: 30
-  delay: 2
-
-- name: add prometheus as datasource in grafana
-  become: true
-  community.grafana.grafana_datasource:
-    name: Prometheus
-    ds_type: prometheus
-    url: http://localhost:9090
-    access: proxy
-    is_default: true
-    grafana_url: http://localhost:3000
-    grafana_user: admin
-    grafana_password: admin
 
 - name: create working directory
   become: true
@@ -68,7 +63,7 @@
     group: deploy
     mode: '0755'
 
-- name: Ensure monitoring packages are installed
+- name: Ensure prometheus packages are installed
   become: true
   apt:
     name: "{{ item }}"
@@ -76,10 +71,9 @@
     update_cache: yes
   loop:
     - prometheus
-    - grafana
     - prometheus-node-exporter
 
-- name: start all monitoring services
+- name: start all prometheus services
   become: true
   systemd:
     name: "{{ item }}"
@@ -87,7 +81,6 @@
     enabled: true
   loop:
     - prometheus
-    - grafana-server
     - prometheus-node-exporter
 
 - name: copy prometheus configuration file
@@ -95,14 +88,13 @@
   copy:
     src: ../../../../prometheus.yml
     dest: /etc/prometheus/prometheus.yml
-  notify: restart prometheus
 
 - name: add prometheus as datasource in grafana
   become: true
   community.grafana.grafana_datasource:
     name: Prometheus
     ds_type: prometheus
-    url: http://localhost:9090
+    ds_url: http://localhost:9090
     access: proxy
     is_default: true
     grafana_url: http://localhost:3000
