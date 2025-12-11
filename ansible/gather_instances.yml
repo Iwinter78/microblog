@@ -7,3 +7,15 @@
         - azure.azcollection
     roles:
         - gather_instances
+
+-   name: Debug hostvars
+    hosts: local
+    gather_facts: False
+    tasks:
+        - name: Display all hostvars for localhost
+          debug:
+            var: hostvars['localhost']
+        
+        - name: Display all groups
+          debug:
+            var: groups
