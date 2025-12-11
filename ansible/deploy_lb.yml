@@ -1,5 +1,5 @@
 ---
-    -   hosts: load_balancers
+    -   hosts: "{{ groups['loadbalancer'][0] }}"
         remote_user: "deploy"
         become: yes
         become_method: sudo

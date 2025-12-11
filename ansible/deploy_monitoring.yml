@@ -1,5 +1,5 @@
 ---
-    -   hosts: monitoring
+    -   hosts: "{{ groups['monitoring'][0] }}"
         remote_user: "deploy"
         become: yes
         become_method: sudo
