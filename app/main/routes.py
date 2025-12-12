@@ -141,6 +141,6 @@ def trigger_fault():
 @bp.app_errorhandler(500)
 def internal_error(error):
     webhook_url = "https://webhook.site/915cd0b3-3409-4a3c-8587-3c82471bd31b"
-    requests.post(webhook_url, json={
+    requests.post(webhook_url, timeout=5, json={
         "error": str(error)
     })
