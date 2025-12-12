@@ -2,17 +2,17 @@
   shell: VERSION={{ version }}-prod docker compose pull
   args:
     chdir: /home/deploy/microblog
-  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+  when: inventory_hostname in groups['appserver1']
 
 - name: set new version fact
   shell: docker compose images prod | awk 'NR==2 {print $2}'
   args:
     chdir: /home/deploy/microblog
   register: new_version
-  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+  when: inventory_hostname in groups['appserver1']
 
 - name: force update docker services with new image
   shell: docker service update --force --image iwinter78/microblog:{{ version }}-prod microblog_prod
   args:
     chdir: /home/deploy/microblog
-  when: inventory_hostname == 'appserver1.snabbnudlar.dev'
+  when: inventory_hostname in groups['appserver1']
