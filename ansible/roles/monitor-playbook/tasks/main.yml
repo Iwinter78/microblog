@@ -1,0 +1,126 @@
+---
+
+- name: create working directory
+  become: true
+  file:
+    path: /home/deploy/microblog
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: '0755'
+
+- name: ensure monitoring packages are installed
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - prometheus
+    - prometheus-node-exporter
+
+- name: install grafana packages
+  block:
+   - name: import GPG key
+     shell: sudo mkdir -p /etc/apt/keyrings/ && wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
+
+   - name: add grafana repository
+     shell: echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+
+   - name: update apt
+     command: sudo apt-get update
+     become: true
+
+   - name: install grafana
+     apt:
+       name: grafana
+       state: present
+       update_cache: yes
+     become: true
+- name: start grafana service
+  become: true
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: true
+
+- name: start all monitoring services
+  become: true
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - prometheus
+    - prometheus-node-exporter
+
+- name: create working directory
+  become: true
+  file:
+    path: /home/deploy/microblog
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: '0755'
+
+- name: Ensure prometheus packages are installed
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - prometheus
+    - prometheus-node-exporter
+
+- name: start all prometheus services
+  become: true
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - prometheus
+    - prometheus-node-exporter
+
+- name: copy prometheus configuration file
+  become: true
+  copy:
+    src: ../../../../prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+
+- name: copy grafana configuration file
+  become: true
+  copy:
+    src: ../../../../grafana.ini
+    dest: /etc/grafana/grafana.ini
+    owner: root
+    group: grafana
+    mode: '0640'
+
+- name: restart grafana service
+  become: true
+  systemd:
+    name: grafana-server
+    state: restarted
+
+- name: wait for grafana server to start
+  ansible.builtin.wait_for:
+    port: 3000
+    host: localhost
+    delay: 5
+    timeout: 60
+    state: started
+  become: false
+
+- name: add prometheus as datasource in grafana
+  become: true
+  community.grafana.grafana_datasource:
+    name: Prometheus
+    ds_type: prometheus
+    ds_url: http://localhost:9090
+    access: proxy
+    is_default: true
+    grafana_url: http://localhost:3000
+    grafana_user: admin
+    grafana_password: jMJ7WVqx6uGumzg

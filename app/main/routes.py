@@ -10,6 +10,7 @@ from app.main.forms import EditProfileForm, PostForm
 from app.models import User, Post
 from app.main import bp
 import os
+import requests
 
 
 
@@ -126,3 +127,20 @@ def version():
     return {
         "version": version
     }
+
+@bp.route('/health', methods=['GET'])
+def health():
+    return {
+        "status": 200
+    }
+
+@bp.route('/trigger_fault', methods=['GET'])
+def trigger_fault():
+    raise RuntimeError("Triggas för testa")
+
+@bp.app_errorhandler(500)
+def internal_error(error):
+    webhook_url = "https://webhook.site/915cd0b3-3409-4a3c-8587-3c82471bd31b"
+    requests.post(webhook_url, timeout=5, json={
+        "error": str(error)
+    })

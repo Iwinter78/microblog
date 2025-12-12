@@ -6,21 +6,19 @@ appserver1
 appserver2
 database
 loadbalancer
+monitoring
 
 [app_servers]
-appserver1.snabbnudlar.dev ansible_host=52.169.111.116 ansible_user=deploy
-appserver2.snabbnudlar.dev ansible_host=52.169.104.234 ansible_user=deploy
 
 [db_servers]
-db.snabbnudlar.dev ansible_host=52.169.111.215 ansible_user=deploy
 
 [load_balancers]
-lb.snabbnudlar.dev ansible_host=52.169.108.69 ansible_user=deploy
 
 [devops:children]
 app_servers
 db_servers
 load_balancers
+monitoring
 
 [webservers:children]
 app_servers
