@@ -104,6 +104,15 @@
     name: grafana-server
     state: restarted
 
+- name: wait for grafana server to start
+  ansible.builtin.wait_for:
+    port: 3000
+    host: localhost
+    delay: 5
+    timeout: 60
+    state: started
+  become: false
+
 - name: add prometheus as datasource in grafana
   become: true
   community.grafana.grafana_datasource:
@@ -114,4 +123,4 @@
     is_default: true
     grafana_url: http://localhost:3000
     grafana_user: admin
-    grafana_password: admin
+    grafana_password: jMJ7WVqx6uGumzg
