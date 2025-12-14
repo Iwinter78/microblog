@@ -60,11 +60,13 @@ jobs:
            
 
       - name: Run playbook
-        run: cd ansible/ && ansible-playbook -i hosts gather_instances.yml redeploy.yml --private-key=/home/runner/.ssh/id_rsa -e "version=${{ steps.version.outputs.version }}"  -e "ansible_python_interpreter=/usr/bin/python3"
+        run: cd ansible/ && ansible-playbook -i hosts gather_instances.yml redeploy.yml --private-key=/home/runner/.ssh/id_rsa -e "version=${{ steps.version.outputs.version }}"
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
+          ANSIBLE_PYTHON_INTERPRETER: auto_silent
 
       - name: check version deployed
-        run: cd ansible/ && ansible-playbook -i hosts check_version.yml --private-key=/home/runner/.ssh/id_rsa  -e "ansible_python_interpreter=/usr/bin/python3"
+        run: cd ansible/ && ansible-playbook -i hosts check_version.yml --private-key=/home/runner/.ssh/id_rsa
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
+          ANSIBLE_PYTHON_INTERPRETER: auto_silent
