@@ -25,9 +25,9 @@ jobs:
           echo "Deploying version: ${VERSION}"
 
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version: "3.12"
 
       - name: Force install azure collection
         run: |
