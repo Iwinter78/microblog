@@ -1,10 +1,12 @@
 - name: get new images in docker swarm
+  become: true
   shell: VERSION={{ version }}-prod docker compose pull
   args:
     chdir: /home/deploy/microblog
   when: inventory_hostname in groups['appserver1']
 
 - name: set new version fact
+  become: true
   shell: docker compose images prod | awk 'NR==2 {print $2}'
   args:
     chdir: /home/deploy/microblog
@@ -12,6 +14,7 @@
   when: inventory_hostname in groups['appserver1']
 
 - name: force update docker services with new image
+  become: true
   shell: docker service update --force --image iwinter78/microblog:{{ version }}-prod microblog_prod
   args:
     chdir: /home/deploy/microblog
