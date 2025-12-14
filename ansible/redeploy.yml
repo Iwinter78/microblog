@@ -1,5 +1,5 @@
 ---
-    -   hosts: "{{ groups['appserver1'][0] }}"
+    -   hosts: "40.69.222.113"
         remote_user: "deploy"
         become: yes
         become_method: sudo
