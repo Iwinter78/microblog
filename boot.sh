@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source .venv/bin/activate
+source /home/microblog/.venv/bin/activate
 while true; do
     flask db upgrade
     if [[ "$?" == "0" ]]; then
