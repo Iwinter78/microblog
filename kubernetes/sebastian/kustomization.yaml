@@ -1,0 +1,3 @@
+resources:
+  - mysql-deploy.yaml
+  - microblog-deploy.yaml
