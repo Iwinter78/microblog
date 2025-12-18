@@ -62,7 +62,7 @@ spec:
           capabilities:
             drop:
               - ALL
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
         resources:
           requests:
             memory: "64Mi"
