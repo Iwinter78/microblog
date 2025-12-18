@@ -38,6 +38,7 @@ spec:
       containers:
       - name: microblog
         image: iwinter78/microblog:master-prod
+        imagePullPolicy: Always
         workingDir: /home/microblog
         resources:
           requests:
@@ -68,5 +69,5 @@ spec:
     app: microblog
   ports:
     - port: 8000
-      targetPort: 8000
+      targetPort: 5000
   type: LoadBalancer
