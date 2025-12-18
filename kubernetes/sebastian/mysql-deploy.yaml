@@ -33,9 +33,22 @@ spec:
       labels:
         app: microblog-mysql
     spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
       containers:
       - name: mysql
         image: mysql:8.0
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 999
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
         resources:
           requests:
             memory: "256Mi"
@@ -60,6 +73,10 @@ spec:
         volumeMounts:
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
+        - name: tmp
+          mountPath: /tmp
+        - name: run
+          mountPath: /var/run/mysqld
         livenessProbe:
           exec:
             command:
@@ -86,3 +103,7 @@ spec:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
           claimName: mysql-pv-claim
+      - name: tmp
+        emptyDir: {}
+      - name: run
+        emptyDir: {}
