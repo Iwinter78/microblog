@@ -78,10 +78,14 @@ spec:
         volumeMounts:
         - name: microblog-storage
           mountPath: /app/data
+        - name: tmp
+          mountPath: /tmp
       volumes:
       - name: microblog-storage
         persistentVolumeClaim:
           claimName: microblog-pvc
+      - name: tmp
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
