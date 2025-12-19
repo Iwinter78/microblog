@@ -101,7 +101,7 @@ spec:
           periodSeconds: 5
       volumes:
       - name: mysql-persistent-storage
-        emptyDir: {}  # Changed from PVC to emptyDir
+        emptyDir: {}
       - name: tmp
         emptyDir: {}
       - name: run
