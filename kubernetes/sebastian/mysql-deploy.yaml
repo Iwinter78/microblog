@@ -9,17 +9,17 @@ spec:
     app: microblog-mysql
   type: ClusterIP
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mysql-pv-claim
-spec:
-  resources:
-    requests:
-      storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
----
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: mysql-pv-claim
+# spec:
+#   resources:
+#     requests:
+#       storage: 1Gi
+#   accessModes:
+#     - ReadWriteOnce
+# ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -101,8 +101,7 @@ spec:
           periodSeconds: 5
       volumes:
       - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
+        emptyDir: {}  # Changed from PVC to emptyDir
       - name: tmp
         emptyDir: {}
       - name: run
