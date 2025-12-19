@@ -1,15 +1,16 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: microblog-pvc
-spec:
-  resources:
-    requests:
-      storage: 10Gi
-  volumeMode: Filesystem
-  accessModes:
-    - ReadWriteOnce
----
+# Fick inte det att fungera med PVC av någon anledning. Skulle gissa på att jag inte har perms i Azure för det.
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: microblog-pvc
+# spec:
+#   resources:
+#     requests:
+#       storage: 1Gi
+#   volumeMode: Filesystem
+#   accessModes:
+#     - ReadWriteOnce
+# ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -82,8 +83,7 @@ spec:
           mountPath: /tmp
       volumes:
       - name: microblog-storage
-        persistentVolumeClaim:
-          claimName: microblog-pvc
+        emptyDir: {}
       - name: tmp
         emptyDir: {}
 ---
@@ -97,4 +97,5 @@ spec:
   ports:
     - port: 8000
       targetPort: 5000
+      protocol: TCP
   type: LoadBalancer
