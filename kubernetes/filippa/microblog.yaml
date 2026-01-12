@@ -32,6 +32,8 @@ spec:
           value: mysql+pymysql://microblog:microblog@mysql:3306/microblog
         ports:
         - containerPort: 5000
+        securityContext:
+          readOnlyRootFilesystem: true
 ---
 apiVersion: v1
 kind: Service
