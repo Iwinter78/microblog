@@ -12,10 +12,10 @@ spec:
       labels:
         app: microblog
     spec:
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
 
       initContainers:
       - name: wait-for-mysql
