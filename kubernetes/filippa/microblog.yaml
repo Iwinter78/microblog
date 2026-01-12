@@ -12,6 +12,11 @@ spec:
       labels:
         app: microblog
     spec:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+
       initContainers:
       - name: wait-for-mysql
         image: busybox
@@ -23,6 +28,14 @@ spec:
               echo "Waiting for MySQL..."
               sleep 2
             done
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
       containers:
       - name: microblog
         image: iwinter78/microblog:master-prod
@@ -34,6 +47,12 @@ spec:
         - containerPort: 5000
         securityContext:
           readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
 ---
 apiVersion: v1
 kind: Service
