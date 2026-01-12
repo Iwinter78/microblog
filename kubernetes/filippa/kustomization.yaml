@@ -1,0 +1,6 @@
+resources:
+  - mysql.yaml
+  - microblog.yaml
+  - 02-service.yml
+  - 03-ingress.yml
+  - 05-issuer-prod.yml

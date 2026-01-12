@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microblog
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: microblog
+  template:
+    metadata:
+      labels:
+        app: microblog
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            until nc -z mysql 3306; do
+              echo "Waiting for MySQL..."
+              sleep 2
+            done
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+      containers:
+      - name: microblog
+        image: iwinter78/microblog:master-prod
+        imagePullPolicy: Always
+        env:
+        - name: DATABASE_URL
+          value: mysql+pymysql://microblog:microblog@mysql:3306/microblog
+        ports:
+        - containerPort: 5000
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: microblog
+spec:
+  type: LoadBalancer
+  selector:
+    app: microblog
+  ports:
+    - port: 80
+      targetPort: 5000
